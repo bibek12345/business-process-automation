@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "projectName": {
-            "value": ""
+            "value": "momoautomate"
           },
           "repositoryToken": {
-            "value": ""
+            "value": "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"
           },
           "repositoryUrl": {
-            "value": ""
+            "value": "https://github.com/bibek12345/business-process-automation.git"
           }
     }
 }
