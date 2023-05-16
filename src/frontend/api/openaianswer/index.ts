@@ -19,7 +19,11 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         let url = `${process.env.OPENAI_ENDPOINT}openai/deployments/${process.env.OPENAI_DEPLOYMENT_TEXT}/completions?api-version=2022-12-01`
 
-        const truncatedString = req.body.document.aggregatedResults.ocr.content.slice(0, 3500)
+        let truncatedString = ""
+        if(req?.body?.text){
+            truncatedString = req.body.text.slice(0, 3500)
+        }
+        
         const q = req.body.q
         let body = {
             "prompt": truncatedString + "\n\n\n" + q,

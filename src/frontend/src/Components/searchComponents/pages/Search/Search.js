@@ -52,6 +52,31 @@ export default function Search(props) {
     return result
   }
 
+  const getText = (searchables, data) => {
+    try {
+      if (!searchables || searchables.length === 0) {
+        return ""
+      }
+      let out = ""
+
+      for (const s of searchables) {
+        let currentData = data
+        for (const i of s.split('/')) {
+          if (Array.isArray(currentData[i])) {
+            currentData = currentData[i][0]
+          } else {
+            currentData = currentData[i]
+          }
+        }
+        out += currentData
+      }
+      return out
+    } catch (err) {
+      console.log(err)
+    }
+
+  }
+
   useEffect(() => {
 
     setIsLoading(true);
@@ -74,15 +99,18 @@ export default function Search(props) {
         .then(response => {
           //console.log(JSON.stringify(response.data))
           if (response?.data?.results?.value) {
-            if(skip === 0 && props.useOpenAiAnswer && response.data.results.value.length > 0){
-              axios.post(`/api/openaianswer`, {
-                q : q,
-                document : response.data.results.value[0]
-              }).then(r => {
-                setOpenAiAnswer(r.data.out.text)
-              }).catch(e => {
-                console.log(e)
-              })
+            if (skip === 0 && props.useOpenAiAnswer && response.data.results.value.length > 0 && q.length > 1) {
+              const searchableText = getText(props.index.searchableFields, response.data.results.value[0])
+              if (searchableText) {
+                axios.post(`/api/openaianswer`, {
+                  q: q,
+                  text: searchableText
+                }).then(r => {
+                  setOpenAiAnswer(r.data.out.text)
+                }).catch(e => {
+                  console.log(e)
+                })
+              }
             }
             setResults(response.data.results.value);
             if (response.data.results.value.length > 0 && response.data.results.value[0]?.type && response.data.results.value[0].type === 'table') {
